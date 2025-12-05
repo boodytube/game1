@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guess the Word - Clay</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: url('https://images.steamusercontent.com/ugc/2310974141604980016/B4EF3A7A2D1772DE26B1A6F51CE33A04FD8BB917/?imw=5000&imh=5000&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=false') no-repeat center center fixed;
+    background-size: cover;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+    color: #fff;
+    text-shadow: 2px 2px 5px #000;
+    transition: all 0.5s;
+  }
+  h1 {
+    margin-bottom: 20px;
+  }
+  .word {
+    font-size: 40px;
+    letter-spacing: 15px;
+    margin-bottom: 30px;
+  }
+  .letters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+  }
+  .letter-btn {
+    background: rgba(0,0,0,0.6);
+    border: 2px solid #fff;
+    padding: 12px 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 18px;
+    transition: 0.3s;
+  }
+  .letter-btn:hover {
+    background: #ff704d;
+    border-color: #ff704d;
+  }
+  #message {
+    margin-top: 20px;
+    font-size: 24px;
+    font-weight: bold;
+  }
+  .hint {
+    margin-top: 15px;
+    font-size: 20px;
+    background: rgba(0,0,0,0.5);
+    padding: 10px 20px;
+    border-radius: 8px;
+  }
+  #winScreen {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+  #winScreen img {
+    max-width: 400px;
+    margin-bottom: 20px;
+    border-radius: 12px;
+  }
+  #winScreen h2 {
+    font-size: 36px;
+    background: linear-gradient(90deg, #ff6a00, #ee0979);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+</style>
+</head>
+<body>
+
+<h1>Guess the Word!</h1>
+<div class="word" id="wordDisplay"></div>
+<div class="letters" id="lettersContainer"></div>
+<div id="message"></div>
+<div id="hints"></div>
+
+<div id="winScreen">
+  <img src="https://lens.usercontent.google.com/image?vsrid=CKSFrcjOyJ_DYxACGAEiJDg1MjNkZGIyLTdlODQtNDg2Zi05OGU3LWFlZDlmNTVhYjIzYzIGIgJlaCgKONe2p9uQp5ED&gsessionid=NuHRNedO5RgMICOmW5vcMfzaUiX_Z3UpNo8vJcF0h4Nth0jmpBkHnQ" alt="You Won">
+  <h2>Fast! You won — the word is CLAY</h2>
+</div>
+
+<script>
+const word = "CLAY";
+let guessedLetters = [];
+let wrongGuesses = 0;
+
+const wordDisplay = document.getElementById('wordDisplay');
+const lettersContainer = document.getElementById('lettersContainer');
+const message = document.getElementById('message');
+const hintsDiv = document.getElementById('hints');
+const winScreen = document.getElementById('winScreen');
+
+// Display blanks
+function updateWordDisplay() {
+  let display = "";
+  for (let char of word) {
+    if (guessedLetters.includes(char)) {
+      display += char + " ";
+    } else {
+      display += "_ ";
+    }
+  }
+  wordDisplay.textContent = display.trim();
+}
+
+// Create letter buttons A-Z
+function createLetterButtons() {
+  for (let i = 65; i <= 90; i++) { // ASCII A-Z
+    const letter = String.fromCharCode(i);
+    const btn = document.createElement('div');
+    btn.classList.add('letter-btn');
+    btn.textContent = letter;
+    btn.addEventListener('click', () => guessLetter(letter, btn));
+    lettersContainer.appendChild(btn);
+  }
+}
+
+// Handle letter guesses
+function guessLetter(letter, button) {
+  button.style.pointerEvents = "none"; // disable after click
+  if (word.includes(letter)) {
+    guessedLetters.push(letter);
+    updateWordDisplay();
+    if (word.split('').every(l => guessedLetters.includes(l))) {
+      showWinScreen();
+    }
+  } else {
+    wrongGuesses++;
+    message.textContent = "❌ Wrong letter!";
+    message.style.color = "red";
+
+    // Show hints
+    if (wrongGuesses === 1) {
+      const hint1 = document.createElement('div');
+      hint1.classList.add('hint');
+      hint1.textContent = "Hint: I am soft";
+      hintsDiv.appendChild(hint1);
+    }
+    if (wrongGuesses === 3) {
+      const hint2 = document.createElement('div');
+      hint2.classList.add('hint');
+      hint2.textContent = "Hint: I can be shaped";
+      hintsDiv.appendChild(hint2);
+    }
+  }
+}
+
+// Show winning screen
+function showWinScreen() {
+  document.querySelector('h1').style.display = 'none';
+  wordDisplay.style.display = 'none';
+  lettersContainer.style.display = 'none';
+  message.style.display = 'none';
+  hintsDiv.style.display = 'none';
+  winScreen.style.display = 'flex';
+}
+
+updateWordDisplay();
+createLetterButtons();
+</script>
+
+</body>
+</html>
